@@ -1,94 +1,66 @@
-// Ardion Staking DApp - Final Version
+// Ardion Staking DApp - Supabase Version
 // Made with ❤️ by Binka
 
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const SUPABASE_URL = "https://fwgaxkiozldgmmtbdfuf.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Z2F4a2lvemxkZ21tdGJkZnVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3Mzk1MjgsImV4cCI6MjA3NjMxNTUyOH0.QqvfVOk0vMCAfOKOKveIPnCm80PfXsJPQljI1LRtHVk";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// --- Wallet Connect ---
 let connectedWallet = null;
-
-// === Connect Wallet ===
 document.querySelector("#connectWallet").addEventListener("click", async () => {
-  if (!window.solana) {
-    alert("Please install a Solana wallet like Phantom first!");
-    return;
-  }
-
+  if (!window.solana) { alert("Install Phantom!"); return; }
   try {
     const resp = await window.solana.connect();
     connectedWallet = resp.publicKey.toString();
-
     document.querySelector("#walletAddress").textContent = connectedWallet;
     document.querySelector("#walletInfo").classList.remove("hidden");
     document.querySelector("#connectWallet").classList.add("hidden");
-
     console.log("✅ Wallet connected:", connectedWallet);
-  } catch (err) {
-    console.error("⚠️ Wallet connection failed:", err);
-    alert("Wallet connection failed.");
-  }
+  } catch (err) { console.error(err); alert("Wallet connection failed."); }
 });
 
-// === Handle Stake ===
+// --- Stake ---
 document.querySelector("#stakeButton").addEventListener("click", async () => {
   const amount = parseFloat(document.querySelector("#stakeAmount").value);
+  if (!connectedWallet || isNaN(amount) || amount <= 0) { alert("Enter valid amount"); return; }
 
-  if (!connectedWallet || isNaN(amount) || amount <= 0) {
-    alert("Enter a valid staking amount.");
-    return;
-  }
+  const reward = parseFloat((amount * 0.025).toFixed(6));
+  const stakeData = { wallet: connectedWallet, amount, reward, timestamp: new Date().toISOString() };
 
-  const rewardRate = 0.025; // 2.5% APR simulation
-  const reward = amount * rewardRate;
+  document.querySelector("#status").textContent = "⏳ Saving to Supabase...";
 
-  const data = {
-    wallet: connectedWallet,
-    amount: amount,
-    reward: reward,
-    timestamp: new Date().toISOString(),
-  };
+  const { data, error } = await supabase
+    .from('stakes')
+    .upsert([stakeData]);
 
-  document.querySelector("#status").textContent = "⏳ Saving to 4EVERLAND...";
-  console.log("📤 Sending data:", data);
-
-  try {
-    const res = await fetch(
-      `https://endpoint.4everland.dev/ardion-staking-data/${connectedWallet}.json`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          // Ganti dengan API Key kamu (bukan Secret!)
-          "Authorization": "Bearer 8SFLMMBQMLUMJVEGED4F",
-        },
-        body: JSON.stringify(data),
-      }
-    );
-
-    if (res.ok) {
-      document.querySelector("#status").textContent = "✅ Stake recorded successfully!";
-      console.log("✅ Data saved successfully to 4EVERLAND bucket!");
-    } else {
-      const errText = await res.text();
-      document.querySelector("#status").textContent = `❌ Failed: ${res.status}`;
-      console.error("❌ Upload failed:", res.status, errText);
-    }
-  } catch (err) {
-    console.error("⚠️ Error saving to 4EVERLAND:", err);
-    document.querySelector("#status").textContent = "⚠️ Error saving data.";
+  if (error) {
+    console.error(error);
+    document.querySelector("#status").textContent = "⚠️ Error saving stake.";
+  } else {
+    document.querySelector("#status").textContent = "✅ Stake recorded!";
+    console.log("✅ Stake saved:", data);
   }
 });
 
-// === Optional: Auto display connected wallet on reload ===
-window.addEventListener("load", async () => {
-  if (window.solana && window.solana.isPhantom) {
-    try {
-      const resp = await window.solana.connect({ onlyIfTrusted: true });
-      connectedWallet = resp.publicKey.toString();
+// --- Leaderboard ---
+async function showLeaderboard() {
+  const { data, error } = await supabase
+    .from('stakes')
+    .select('*')
+    .order('amount', { ascending: false });
 
-      document.querySelector("#walletAddress").textContent = connectedWallet;
-      document.querySelector("#walletInfo").classList.remove("hidden");
-      document.querySelector("#connectWallet").classList.add("hidden");
+  if (error) { console.error(error); return; }
 
-      console.log("🔄 Auto reconnected:", connectedWallet);
-    } catch (e) {
-      console.log("No trusted wallet found, please connect manually.");
-    }
-  }
-});
+  const table = document.querySelector("#leaderboard tbody");
+  table.innerHTML = "";
+  data.forEach((item, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${i+1}</td><td>${item.wallet}</td><td>${item.amount}</td><td>${item.reward}</td>`;
+    table.appendChild(tr);
+  });
+}
+
+document.querySelector("#showLeaderboard").addEventListener("click", showLeaderboard);
