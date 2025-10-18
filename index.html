@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ardion Staking DApp</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>🔥 Ardion Staking DApp</h1>
+    <p>Stake your ARDION and earn daily APR rewards</p>
+
+    <button id="connectWallet">🔗 Connect Wallet</button>
+
+    <div id="stakeForm" style="display:none;">
+      <input type="number" id="stakeAmount" placeholder="Enter amount of ARDION to stake">
+      <button id="stakeButton">Stake Now</button>
+    </div>
+
+    <div id="status"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
