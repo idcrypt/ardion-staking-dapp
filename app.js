@@ -55,7 +55,7 @@ document.querySelector("#stakeButton").addEventListener("click", async () => {
         headers: {
           "Content-Type": "application/json",
           // Ganti dengan API Key kamu (bukan Secret!)
-          "Authorization": "Bearer c34d68751f8a4042bf886446d0a7d048",
+          "Authorization": "Bearer 8SFLMMBQMLUMJVEGED4F",
         },
         body: JSON.stringify(data),
       }
