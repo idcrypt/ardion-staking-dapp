@@ -54,8 +54,11 @@ input {
 
 #status {
   margin-top: 15px;
+  color: #00e676;
+  font-weight: bold;
+}
 
-  table {
+table {
   width: 100%;
   margin-top: 15px;
   border-collapse: collapse;
@@ -76,8 +79,4 @@ th {
 
 #leaderboard tbody tr:hover {
   background: rgba(0,194,255,0.2);
-}
-
-  color: #00e676;
-  font-weight: bold;
 }
