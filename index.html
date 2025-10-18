@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ardion Staking DApp</title>
+  <title>Ardion Staking Portal</title>
   <link rel="stylesheet" href="style.css">
   <script type="module" src="app.js" defer></script>
 </head>
@@ -17,7 +17,7 @@
 
       <div id="walletInfo" class="hidden">
         <p>Connected wallet: <span id="walletAddress"></span></p>
-        <input type="number" id="stakeAmount" placeholder="Enter amount to stake" min="0.000001" step="0.000001">
+        <input type="number" id="stakeAmount" placeholder="Enter amount to stake">
         <button id="stakeButton">Stake Now</button>
       </div>
 
@@ -29,16 +29,9 @@
       <button id="showLeaderboard">Show Leaderboard</button>
       <table id="leaderboard">
         <thead>
-          <tr>
-            <th>#</th>
-            <th>Wallet</th>
-            <th>Staked</th>
-            <th>Reward</th>
-          </tr>
+          <tr><th>#</th><th>Wallet</th><th>Staked</th><th>Reward</th></tr>
         </thead>
-        <tbody>
-          <!-- Leaderboard rows injected here by app.js -->
-        </tbody>
+        <tbody></tbody>
       </table>
     </div>
   </div>
