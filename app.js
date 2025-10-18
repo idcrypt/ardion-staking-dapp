@@ -8,8 +8,9 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// --- Wallet Connect ---
 let connectedWallet = null;
+
+// --- Wallet Connect ---
 document.querySelector("#connectWallet").addEventListener("click", async () => {
   if (!window.solana) { alert("Install Phantom!"); return; }
   try {
@@ -24,8 +25,13 @@ document.querySelector("#connectWallet").addEventListener("click", async () => {
 
 // --- Stake ---
 document.querySelector("#stakeButton").addEventListener("click", async () => {
-  const amount = parseFloat(document.querySelector("#stakeAmount").value);
-  if (!connectedWallet || isNaN(amount) || amount <= 0) { alert("Enter valid amount"); return; }
+  const val = document.querySelector("#stakeAmount").value;
+  const amount = parseFloat(val);
+  
+  if (!connectedWallet || isNaN(amount) || amount <= 0) {
+    alert("Enter a valid amount.");
+    return;
+  }
 
   const reward = parseFloat((amount * 0.025).toFixed(6));
   const stakeData = { wallet: connectedWallet, amount, reward, timestamp: new Date().toISOString() };
