@@ -50,7 +50,7 @@ document.querySelector("#stakeButton").addEventListener("click", async () => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer YOUR_ACCESS_KEY"
+          "Authorization": "Bearer c34d68751f8a4042bf886446d0a7d048"
         },
         body: JSON.stringify(data)
       }
