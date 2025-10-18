@@ -17,8 +17,10 @@ document.querySelector("#connectWallet").addEventListener("click", async () => {
     document.querySelector("#walletAddress").textContent = connectedWallet;
     document.querySelector("#walletInfo").classList.remove("hidden");
     document.querySelector("#connectWallet").classList.add("hidden");
+
+    console.log("✅ Wallet connected:", connectedWallet);
   } catch (err) {
-    console.error(err);
+    console.error("⚠️ Wallet connection failed:", err);
     alert("Wallet connection failed.");
   }
 });
@@ -26,22 +28,24 @@ document.querySelector("#connectWallet").addEventListener("click", async () => {
 // === Handle Stake ===
 document.querySelector("#stakeButton").addEventListener("click", async () => {
   const amount = parseFloat(document.querySelector("#stakeAmount").value);
+
   if (!connectedWallet || isNaN(amount) || amount <= 0) {
     alert("Enter a valid staking amount.");
     return;
   }
 
-  const rewardRate = 0.025; // 2.5% APR simple simulation
+  const rewardRate = 0.025; // 2.5% APR simulation
   const reward = amount * rewardRate;
 
   const data = {
     wallet: connectedWallet,
     amount: amount,
     reward: reward,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   document.querySelector("#status").textContent = "⏳ Saving to 4EVERLAND...";
+  console.log("📤 Sending data:", data);
 
   try {
     const res = await fetch(
@@ -50,21 +54,41 @@ document.querySelector("#stakeButton").addEventListener("click", async () => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer c34d68751f8a4042bf886446d0a7d048"
+          // Ganti dengan API Key kamu (bukan Secret!)
+          "Authorization": "Bearer c34d68751f8a4042bf886446d0a7d048",
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       }
     );
 
     if (res.ok) {
       document.querySelector("#status").textContent = "✅ Stake recorded successfully!";
-      console.log("Data saved:", data);
+      console.log("✅ Data saved successfully to 4EVERLAND bucket!");
     } else {
-      document.querySelector("#status").textContent = "❌ Failed to save data.";
-      console.error(await res.text());
+      const errText = await res.text();
+      document.querySelector("#status").textContent = `❌ Failed: ${res.status}`;
+      console.error("❌ Upload failed:", res.status, errText);
     }
   } catch (err) {
-    console.error(err);
+    console.error("⚠️ Error saving to 4EVERLAND:", err);
     document.querySelector("#status").textContent = "⚠️ Error saving data.";
+  }
+});
+
+// === Optional: Auto display connected wallet on reload ===
+window.addEventListener("load", async () => {
+  if (window.solana && window.solana.isPhantom) {
+    try {
+      const resp = await window.solana.connect({ onlyIfTrusted: true });
+      connectedWallet = resp.publicKey.toString();
+
+      document.querySelector("#walletAddress").textContent = connectedWallet;
+      document.querySelector("#walletInfo").classList.remove("hidden");
+      document.querySelector("#connectWallet").classList.add("hidden");
+
+      console.log("🔄 Auto reconnected:", connectedWallet);
+    } catch (e) {
+      console.log("No trusted wallet found, please connect manually.");
+    }
   }
 });
