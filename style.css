@@ -54,6 +54,30 @@ input {
 
 #status {
   margin-top: 15px;
+
+  table {
+  width: 100%;
+  margin-top: 15px;
+  border-collapse: collapse;
+  color: #f8fafc;
+}
+
+th, td {
+  padding: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  text-align: center;
+}
+
+th {
+  background: rgba(0,0,0,0.2);
+  font-weight: bold;
+  border-radius: 8px;
+}
+
+#leaderboard tbody tr:hover {
+  background: rgba(0,194,255,0.2);
+}
+
   color: #00e676;
   font-weight: bold;
 }
